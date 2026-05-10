@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Online Proctoring for Technical Assessments | Prelim.io</title>
+  <meta name="description"
+    content="Secure, scalable, enterprise-ready online proctoring for technical assessments, hiring, certifications, and skill benchmarking." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #1e3a5f;
+      --navy-deep: #0c1f3a;
+      --teal: #0aabc5;
+      --teal-dark: #0888a8;
+      --muted: #5a7a9a;
+      --light-bg: #edf5fb;
+      --border: rgba(30, 58, 95, .12);
+      --r-pill: 100px;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'DM Sans', sans-serif; color: var(--navy); background: #fff; }
+    h1, h2, h3 { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; line-height: 1.12; }
+    a { color: inherit; text-decoration: none; }
+    ul { margin: 0; padding: 0; list-style: none; }
+
+    .announcement-bar,
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1200;
+      background: linear-gradient(90deg, var(--teal), var(--navy-deep));
+      color: #fff;
+      text-align: center;
+      padding: 7px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .ab-new {
+      background: rgba(255, 255, 255, .22);
+      border-radius: var(--r-pill);
+      padding: 1px 10px;
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+    }
+
+    .site-nav,
+    .nav {
+      position: fixed;
+      top: 38px;
+      left: 0;
+      right: 0;
+      z-index: 1100;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 2px 20px rgba(30, 58, 95, .08);
+    }
+
+    .nav-wrap,
+    .nav-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      height: 64px;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 28px;
+    }
+
+    .nav-logo,
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: var(--navy);
+      font-weight: 800;
+      font-size: 20px;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+
+    .logo-mark {
+      width: 28px;
+      height: 28px;
+      border: 2.4px solid var(--navy);
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .logo-mark::after {
+      content: "";
+      width: 14px;
+      height: 8px;
+      border-left: 3px solid #5cb85c;
+      border-bottom: 3px solid var(--teal);
+      transform: rotate(-45deg);
+      position: absolute;
+      left: 6px;
+      top: 7px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .nav-item>a,
+    .nav-link,
+    .nav-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 64px;
+      color: var(--navy);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .nav-item>a:hover,
+    .nav-link:hover,
+    .nav-trigger:hover { color: var(--teal-dark); }
+
+    .nav-item { position: relative; }
+
+    .nav-dropdown,
+    .dropdown {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%) translateY(8px);
+      width: 330px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 20px 60px rgba(30, 58, 95, .14);
+      transition: opacity .2s, transform .2s, visibility .2s;
+    }
+
+    .nav-item:hover .nav-dropdown,
+    .nav-item:hover .dropdown {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .nd-item,
+    .dropdown a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 8px;
+    }
+
+    .nd-item:hover,
+    .dropdown a:hover { background: var(--light-bg); }
+
+    .nd-ic {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: rgba(10, 171, 197, .1);
+      color: var(--teal);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 36px;
+    }
+
+    .nd-ic svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+    }
+
+    .nd-texts { display: block; min-width: 0; }
+    .nd-label,
+    .dropdown strong { display: block; color: var(--navy); font-weight: 800; font-size: 14px; }
+    .nd-sub,
+    .dropdown span { display: block; color: var(--muted); font-size: 12.5px; margin-top: 3px; font-weight: 500; line-height: 1.35; }
+
+    .nd-all {
+      margin-top: 6px;
+      border-top: 1px solid var(--border);
+      color: var(--teal-dark);
+      font-weight: 800;
+      justify-content: space-between;
+    }
+
+    .nd-all-arrow svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      white-space: nowrap;
+    }
+
+    .nav-sep {
+      width: 1px;
+      height: 22px;
+      background: var(--border);
+    }
+
+    .nav-login {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .btn-nav,
+    .nav-cta {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--r-pill);
+      padding: 0 18px;
+      background: var(--teal);
+      color: #fff;
+      font-weight: 800;
+      box-shadow: 0 8px 18px rgba(10, 171, 197, .24);
+    }
+
+    .hero {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      color: #fff;
+      padding: 190px 28px 92px;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(10, 171, 197, .34), transparent 28%),
+        radial-gradient(circle at 84% 24%, rgba(92, 184, 92, .22), transparent 24%),
+        linear-gradient(135deg, #061121 0%, var(--navy-deep) 48%, #075a70 100%);
+      background-size: 120% 120%, 130% 130%, 100% 100%;
+      animation: proctorHeroShift 16s ease-in-out infinite alternate;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, .06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .06) 1px, transparent 1px);
+      background-size: 54px 54px;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, .8), rgba(0, 0, 0, .16));
+      animation: proctorGridDrift 22s linear infinite;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 520px;
+      height: 520px;
+      right: -150px;
+      bottom: -210px;
+      z-index: -1;
+      border: 1px solid rgba(168, 230, 240, .18);
+      border-radius: 50%;
+      background:
+        conic-gradient(from 120deg, transparent 0deg, rgba(10, 171, 197, .2) 72deg, transparent 120deg),
+        radial-gradient(circle, transparent 46%, rgba(255, 255, 255, .08) 47%, transparent 48%);
+      animation: proctorRadarSpin 24s linear infinite;
+    }
+
+    .hero-inner, .section-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(320px, .92fr);
+      gap: 58px;
+      align-items: center;
+      position: relative;
+      padding: clamp(24px, 4vw, 44px);
+      border: 1px solid rgba(255, 255, 255, .16);
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, .13), rgba(255, 255, 255, .055));
+      box-shadow: 0 30px 100px rgba(0, 0, 0, .22);
+      backdrop-filter: blur(20px);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      padding: 8px 12px;
+      border-radius: var(--r-pill);
+      background: rgba(255, 255, 255, .14);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .9px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    h1 { font-size: clamp(38px, 6vw, 68px); margin-bottom: 18px; }
+    .subtitle { font-size: clamp(20px, 2vw, 26px); font-weight: 800; margin-bottom: 16px; }
+    .lede { color: rgba(255, 255, 255, .78); font-size: 18px; line-height: 1.75; margin: 0; }
+
+    .console {
+      min-height: 360px;
+      border: 1px solid rgba(255, 255, 255, .24);
+      border-radius: 8px;
+      padding: 28px;
+      background: linear-gradient(145deg, rgba(255, 255, 255, .2), rgba(255, 255, 255, .08));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), 0 22px 70px rgba(0, 0, 0, .18);
+      backdrop-filter: blur(18px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .metric {
+      min-height: 108px;
+      border: 1px solid rgba(255, 255, 255, .18);
+      border-radius: 8px;
+      padding: 18px;
+      background: rgba(255, 255, 255, .11);
+    }
+
+    @keyframes proctorHeroShift {
+      from { background-position: 0% 0%, 100% 0%, 0 0; }
+      to { background-position: 16% 12%, 82% 18%, 0 0; }
+    }
+
+    @keyframes proctorGridDrift {
+      from { background-position: 0 0, 0 0; }
+      to { background-position: 54px 54px, 54px 54px; }
+    }
+
+    @keyframes proctorRadarSpin {
+      from { transform: rotate(0deg) scale(1); }
+      to { transform: rotate(360deg) scale(1.04); }
+    }
+
+    .metric strong { display: block; font-size: 26px; margin-bottom: 8px; }
+    .metric span { color: rgba(255, 255, 255, .78); font-size: 13px; line-height: 1.35; }
+
+    section { padding: 86px 28px; }
+    .section-soft { background: linear-gradient(180deg, #fff, #f4fbfd); }
+    .section-title { color: var(--navy-deep); font-size: clamp(28px, 4vw, 42px); margin-bottom: 24px; }
+
+    .grid-4, .grid-3 {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 16px 46px rgba(30, 58, 95, .07);
+    }
+
+    .card h3 { color: var(--navy); font-size: 20px; margin-bottom: 12px; }
+    .card p { color: var(--muted); line-height: 1.65; margin: 0 0 14px; }
+    .card li { color: var(--muted); line-height: 1.55; padding-left: 18px; position: relative; margin-bottom: 10px; }
+    .card li::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--teal); position: absolute; left: 0; top: .62em; }
+
+    .band {
+      margin-top: 44px;
+      padding: 32px;
+      border-radius: 8px;
+      background: var(--navy-deep);
+      color: #fff;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .band p { color: rgba(255, 255, 255, .76); line-height: 1.65; margin: 8px 0 0; }
+    .tags { display: flex; flex-wrap: wrap; gap: 10px; }
+    .tags span { background: rgba(10, 171, 197, .16); color: #fff; border-radius: var(--r-pill); padding: 8px 12px; font-size: 13px; font-weight: 800; }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+    .btn { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; border-radius: var(--r-pill); padding: 0 20px; background: var(--teal); color: #fff; font-weight: 800; }
+    .btn.alt { background: #fff; color: var(--navy); border: 1px solid var(--border); }
+
+    footer { padding: 34px 28px; border-top: 1px solid var(--border); color: var(--muted); }
+    footer .section-inner { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+
+    @media(max-width: 900px) {
+      .hero-grid, .grid-4, .grid-3, .band { grid-template-columns: 1fr; }
+      .nav-wrap, .nav-inner { padding: 0 20px; }
+      .nav-links, .nav-actions { display: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="announcement-bar"><span class="ab-new">New</span>AI Screener 2.0 is here - smarter, faster, fairer hiring starts now</div>
+  <nav class="site-nav">
+    <div class="nav-wrap">
+      <a class="nav-logo logo" href="/"><span class="logo-mark"></span><span>prelim.io</span></a>
+      <div class="nav-links">
+        <a class="nav-link" href="/product/technical-assessment.html">Products</a>
+        <a class="nav-link" href="/solutions/domain-it.html">Domain</a>
+        <div class="nav-item">
+          <span class="nav-trigger">Features</span>
+          <div class="nav-dropdown dropdown">
+            <a class="nd-item" href="/solutions/online-proctoring.html">
+              <span class="nd-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="M9 12l2 2 4-4" /></svg></span>
+              <span class="nd-texts"><span class="nd-label">Online Proctoring</span><span class="nd-sub">Secure technical assessments at scale</span></span>
+            </a>
+            <a class="nd-item" href="/solutions/leadership-assessments.html">
+              <span class="nd-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-8 0v2" /><circle cx="12" cy="7" r="4" /><path d="M19 8l2 2 3-4" /></svg></span>
+              <span class="nd-texts"><span class="nd-label">Leadership Assessments</span><span class="nd-sub">AI-powered leadership insights</span></span>
+            </a>
+            <a class="nd-item nd-all" href="/solutions/campus-hiring.html#features">Explore all features <span class="nd-all-arrow"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg></span></a>
+          </div>
+        </div>
+        <a class="nav-link" href="/solutions/campus-hiring.html">Solutions</a>
+        <a class="nav-link" href="/resources/guides.html">Resources</a>
+        <a class="nav-link" href="/product/enterprise.html">Enterprise</a>
+        <a class="nav-link" href="/company/about.html">Company</a>
+      </div>
+      <div class="nav-actions">
+        <div class="nav-sep"></div>
+        <a class="nav-login" href="#">Log In</a>
+        <a class="btn-nav nav-cta" href="/resources/demo.html">Start Free Trial</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-inner hero-grid">
+      <div>
+        <span class="eyebrow">Features</span>
+        <h1>Online Proctoring for Technical Assessments</h1>
+        <p class="subtitle">Secure. Scalable. Enterprise-Ready.</p>
+        <p class="lede">Ensure the integrity of your technical hiring and certification processes with our AI-powered
+          online proctoring assessment platform. Designed for enterprise environments, it delivers a seamless, secure,
+          and compliant evaluation experience across geographies.</p>
+        <div class="actions">
+          <a class="btn" href="/resources/demo.html">Request a Demo</a>
+          <a class="btn alt" href="/company/contact.html">Talk to an Assessment Specialist</a>
+        </div>
+      </div>
+      <div class="console">
+        <h2>Assessment integrity dashboard</h2>
+        <div class="metrics">
+          <div class="metric"><strong>AI</strong><span>Behavioural monitoring and anomaly flagging</span></div>
+          <div class="metric"><strong>ID</strong><span>Continuous identity verification</span></div>
+          <div class="metric"><strong>Logs</strong><span>Audit-ready session evidence</span></div>
+          <div class="metric"><strong>Scale</strong><span>High-concurrency global delivery</span></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="section-soft">
+    <div class="section-inner">
+      <h2 class="section-title">Key Capabilities</h2>
+      <div class="grid-4">
+        <div class="card"><h3>AI-Driven Proctoring</h3><ul><li>Real-time monitoring using advanced behavioural analysis</li><li>Automated flagging of suspicious activities</li><li>Continuous identity verification</li></ul></div>
+        <div class="card"><h3>End-to-End Assessment Security</h3><ul><li>Browser lockdown and screen monitoring</li><li>Multi-factor candidate authentication</li><li>Plagiarism and code similarity detection</li></ul></div>
+        <div class="card"><h3>Scalable Technical Assessments</h3><ul><li>Supports coding, MCQs, and scenario-based evaluations</li><li>High concurrency handling for global hiring drives</li><li>Low-latency performance across regions</li></ul></div>
+        <div class="card"><h3>Enterprise-Grade Compliance</h3><ul><li>Data privacy aligned with global standards</li><li>Audit-ready reports and detailed session logs</li><li>Role-based access controls and encryption</li></ul></div>
+      </div>
+
+      <h2 class="section-title" style="margin-top:64px;">Why Choose Prelim</h2>
+      <div class="grid-4">
+        <div class="card"><h3>Trusted Accuracy</h3><p>Minimize malpractice with intelligent monitoring.</p></div>
+        <div class="card"><h3>Seamless Candidate Experience</h3><p>Frictionless, device-friendly assessment interface.</p></div>
+        <div class="card"><h3>Actionable Insights</h3><p>Detailed analytics to drive better hiring decisions.</p></div>
+        <div class="card"><h3>Flexible Integration</h3><p>Connect with ATS, LMS, and HR systems.</p></div>
+      </div>
+
+      <div class="band">
+        <div>
+          <h2>Drive fair, secure, and efficient assessments</h2>
+          <p>Empower your organization with a future-ready proctoring solution that combines precision, reliability,
+            and scale without compromising candidate experience.</p>
+        </div>
+        <div class="tags"><span>Large-scale hiring</span><span>Remote certifications</span><span>Skill benchmarking</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-inner">
+      <h2 class="section-title">Built for every stakeholder</h2>
+      <div class="grid-3">
+        <div class="card">
+          <h3>HR Leaders</h3>
+          <p>Hire with confidence. Assess at scale.</p>
+          <ul><li>Fraud-resistant assessments with AI-assisted proctoring and identity verification</li><li>Fair evaluations with consistent monitoring and audit-ready evidence</li><li>Faster hiring cycles through automated flags and reports</li><li>Global scalability for campus drives and high-concurrency recruitment</li></ul>
+        </div>
+        <div class="card">
+          <h3>L&amp;D Teams</h3>
+          <p>Validate skills. Protect certifications.</p>
+          <ul><li>Trusted certification outcomes with continuous proctoring and session logs</li><li>Flexible assessments for coding, MCQs, and scenario-based evaluations</li><li>Actionable analytics to identify skill gaps and training impact</li><li>Enterprise governance with role-based access and audit trails</li></ul>
+        </div>
+        <div class="card">
+          <h3>CTOs and IT Leaders</h3>
+          <p>Enterprise security for remote technical assessments.</p>
+          <ul><li>Secure-by-design encryption, access controls, and audit-ready reporting</li><li>Browser controls, screen monitoring, and anomaly flagging</li><li>Scalable architecture for high concurrency and performance consistency</li><li>Integration-ready for ATS, LMS, and HRIS systems</li></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="section-inner">
+      <span>© 2026 Prelim.io</span>
+      <span><a href="/solutions/leadership-assessments.html">Leadership Assessments</a> · <a href="/solutions/campus-hiring.html">Campus Hiring</a></span>
+    </div>
+  </footer>
+  <script src="/assets/interactive-neural-vortex-background.js"></script>
+</body>
+
+</html>
